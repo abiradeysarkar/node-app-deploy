@@ -34,16 +34,17 @@ pipeline {
     }
 
     stage('Deploy App'){
+        steps{
+            sh ''' cd 
+            ssh -i "AWS-upgrad.pem" ubuntu@10.0.2.185
 
-        sh ''' cd 
-        ssh -i "AWS-upgrad.pem" ubuntu@10.0.2.185
-
-        echo '---------------------------------------- Pre-Deploy-steps-----------------------------------'
-        // Remove running containers and images
-        docker rmi -f $(docker images -aq)
-        docker rm -vf $(docker ps -aq)
-        echo '----------------------------------------- Pre-Deploy-steps-Completed------------------------------------'
-        sudo docker run -d -p 80:8081 --rm --name application 381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins:latest '''
+            echo '---------------------------------------- Pre-Deploy-steps-----------------------------------'
+            // Remove running containers and images
+            docker rmi -f $(docker images -aq)
+            docker rm -vf $(docker ps -aq)
+            echo '----------------------------------------- Pre-Deploy-steps-Completed------------------------------------'
+            sudo docker run -d -p 80:8081 --rm --name application 381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins:latest '''
+        }
     }
 
 
