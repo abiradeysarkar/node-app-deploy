@@ -9,7 +9,6 @@ pipeline {
     stages {
         stage('Cloning Git') {
             steps {
-                dir('node-application')
                 sh "git clone https://github.com/abiradeysarkar/node-app-deploy.git"
             }
         }
@@ -18,7 +17,8 @@ pipeline {
     stage('Building image') {
       steps{
         script {
-          dockerImage = docker.build registry
+            dir('node-application')
+            dockerImage = docker.build registry
         }
       }
     }
