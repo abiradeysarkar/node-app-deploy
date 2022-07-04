@@ -10,7 +10,7 @@ pipeline {
         stage('Cloning Git') {
             steps {
                 dir('node-application')
-                sh "git clone https://github.com/abiradeysarkar/Node-app-assignment.git"
+                sh "git clone https://github.com/abiradeysarkar/node-app-deploy.git"
             }
         }
 
