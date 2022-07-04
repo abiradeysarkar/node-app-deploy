@@ -46,8 +46,6 @@ pipeline {
         sudo docker run -d -p 80:8081 --rm --name application 381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins:latest '''
     }
 
-    stage('Post Actions'){
-        cleanWs()
-    }
+
     }
 }
