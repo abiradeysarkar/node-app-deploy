@@ -1,7 +1,7 @@
 @Library('github.com/releaseworks/jenkinslib') _
 
 pipeline {
-    agent any
+    agent { label 'worker' }
     environment {
         registry = "381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins"
     }
