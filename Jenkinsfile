@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Cloning Git') {
             steps {
-                sh "git clone https://github.com/abiradeysarkar/node-app-deploy.git"
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/abiradeysarkar/node-app-deploy.git']]])
             }
         }
 
@@ -17,7 +17,7 @@ pipeline {
     stage('Building image') {
       steps{
         script {
-            dir('node-application')
+            dir('/home/ubuntu/workspace/node-app-assignment/node-application')
             dockerImage = docker.build registry
         }
       }
@@ -46,7 +46,5 @@ pipeline {
             sudo docker run -d -p 80:8081 --rm --name application 381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins:latest '''
         }
     }
-
-
-    }
+    } 
 }
