@@ -1,0 +1,436 @@
+Started by user Abira
+Loading library github.com/releaseworks/jenkinslib@master
+Attempting to resolve master from remote references...
+ > git --version # timeout=10
+ > git --version # 'git version 2.30.2'
+ > git ls-remote -- https://github.com/releaseworks/jenkinslib.git # timeout=10
+Found match: refs/heads/master revision e456616151810061e3e805ba143969cd0ab5e036
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/node-app-assignment@libs/0d4304d8cd2d4481a4ab748452840f1cb625c6a1ead319bbc0cfd0f2488496d5/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/releaseworks/jenkinslib.git # timeout=10
+Fetching without tags
+Fetching upstream changes from https://github.com/releaseworks/jenkinslib.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.30.2'
+ > git fetch --no-tags --force --progress -- https://github.com/releaseworks/jenkinslib.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Checking out Revision e456616151810061e3e805ba143969cd0ab5e036 (master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f e456616151810061e3e805ba143969cd0ab5e036 # timeout=10
+Commit message: "remove double quotes completely from message"
+ > git rev-list --no-walk e456616151810061e3e805ba143969cd0ab5e036 # timeout=10
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on jenkins in /home/ubuntu/workspace/node-app-assignment
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $SSH_KEY_FILE or $SSH_KEY_FILE_PSW
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Cloning Git)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Fetching changes from the remote Git repository
+Checking out Revision 4e754e0ab4006366862eac79b0f8b929d9956a35 (refs/remotes/origin/main)
+Commit message: "Updated the dockerfile path on Jenkinsfile"
+ > git rev-parse --resolve-git-dir /home/ubuntu/workspace/node-app-assignment/.git # timeout=10
+ > git config remote.origin.url https://github.com/abiradeysarkar/node-app-deploy.git # timeout=10
+Fetching upstream changes from https://github.com/abiradeysarkar/node-app-deploy.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.34.1'
+ > git fetch --tags --force --progress -- https://github.com/abiradeysarkar/node-app-deploy.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 4e754e0ab4006366862eac79b0f8b929d9956a35 # timeout=10
+ > git rev-list --no-walk 4e754e0ab4006366862eac79b0f8b929d9956a35 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Building image)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] dir
+Running in /home/ubuntu/workspace/node-app-assignment/node-application
+[Pipeline] {
+[Pipeline] sh
++ docker build -t node-app .
+Sending build context to Docker daemon   5.12kB
+
+Step 1/6 : FROM node:alpine
+ ---> 515db77e67c7
+Step 2/6 : WORKDIR /app
+ ---> Using cache
+ ---> ac40c3da1354
+Step 3/6 : COPY ["package.json", "package-lock.json*", "./"]
+ ---> Using cache
+ ---> f1eb0a2007e2
+Step 4/6 : RUN npm install
+ ---> Using cache
+ ---> 65692307d06a
+Step 5/6 : COPY . .
+ ---> Using cache
+ ---> b6ea5547838c
+Step 6/6 : CMD [ "node", "server.js" ]
+ ---> Using cache
+ ---> 3d64d0edf8f2
+Successfully built 3d64d0edf8f2
+Successfully tagged node-app:latest
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Pushing to ECR)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ docker login --username AWS --password-stdin 381372271377.dkr.ecr.us-east-1.amazonaws.com
++ aws ecr get-login-password --region us-east-1
+WARNING! Your password will be stored unencrypted in /home/ubuntu/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[Pipeline] sh
++ docker tag node-app 381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins:latest
+[Pipeline] sh
++ docker push 381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins:latest
+The push refers to repository [381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins]
+ccbbf92efdb0: Preparing
+ccfc9d86652c: Preparing
+a7afa60511b9: Preparing
+8f14337e1c65: Preparing
+7962b4fa86f9: Preparing
+70fff1b8b419: Preparing
+67bb22608009: Preparing
+24302eb7d908: Preparing
+70fff1b8b419: Waiting
+67bb22608009: Waiting
+24302eb7d908: Waiting
+7962b4fa86f9: Layer already exists
+ccfc9d86652c: Layer already exists
+a7afa60511b9: Layer already exists
+ccbbf92efdb0: Layer already exists
+8f14337e1c65: Layer already exists
+70fff1b8b419: Layer already exists
+67bb22608009: Layer already exists
+24302eb7d908: Layer already exists
+latest: digest: sha256:d1a3426ee5cc7708cb6309c6785c4daf731d82ffd8d614ab52e08d82dfa748fa size: 1989
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy App)
+[Pipeline] sh
++ cd /home/ubuntu
++ pwd
+/home/ubuntu
++ ssh -tt -i **** -o StrictHostKeyChecking=no ubuntu@10.0.2.185
+Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.13.0-1031-aws x86_64)
+
+ * Documentation:  https://help.ubuntu.com            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 381372271377.dkr.ecr.us-east-1.amazonaws.com
+            echo '---------------------------------------- Pre-Deploy-steps-----------------------------------'
+            docker rm -f $(sudo docker ps -qa)
+            docker rmi -f $(sudo docker images -q)
+            echo '----------------------------------------- Pre-Deploy-steps-Completed------------------------------------'
+            docker run -d -p 8080:8081 --rm --name application 381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins:latest 
+            exit 0
+            EOF
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Wed Jul  6 16:23:27 UTC 2022
+
+  System load:  0.04              Processes:                112
+  Usage of /:   43.7% of 7.58GB   Users logged in:          0
+  Memory usage: 15%               IPv4 address for docker0: 172.17.0.1
+  Swap usage:   0%                IPv4 address for eth0:    10.0.2.185
+
+ * Ubuntu Pro delivers the most comprehensive open source security and
+   compliance features.
+
+   https://ubuntu.com/aws/pro
+
+12 updates can be applied immediately.
+To see these additional updates run: apt list --upgradable
+
+
+Last login: Wed Jul  6 16:20:44 2022 from 10.0.2.108
+
+ubuntu@ip-10-0-2-185:~$ 
+<-stdin 381372271377.dkr.ecr.us-east-1.amazonaws.com
+WARNING! Your password will be stored unencrypted in /home/ubuntu/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+ubuntu@ip-10-0-2-185:~$ 
+<re-Deploy-steps-----------------------------------'
+---------------------------------------- Pre-Deploy-steps-----------------------------------
+ubuntu@ip-10-0-2-185:~$             docker rm -f $(sudo docker ps -qa)
+af7bde873e95
+ubuntu@ip-10-0-2-185:~$             docker rmi -f $(sudo docker images -q)
+Untagged: 381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins:latest
+Untagged: 381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins@sha256:d1a3426ee5cc7708cb6309c6785c4daf731d82ffd8d614ab52e08d82dfa748fa
+Deleted: sha256:3d64d0edf8f2041c6f43403299e27902cbeb43d4550f08aca9efaef3b3b7333d
+Deleted: sha256:e359072b9d8589b19a5a403ffec987a848c1eeeddb737266647d7b951f798e39
+Deleted: sha256:6685640527902d972cd353e2336510a690d14dc75505151b6e19d3902abb93cb
+Deleted: sha256:e54df2a02462d7cf83665d113853b4207e4dc25d5550919f44152080e158d661
+Deleted: sha256:4d021e9565eb952304dc9b2cbb1ffd5ffe6c971564a27cf3e1234bb91850e119
+Deleted: sha256:c8a1ba4de548105ea02515cd4b5f4739546abf7fff4406d12d036d69026f308e
+Deleted: sha256:e122834a79fd0ae1b2d506fcdbaa2301efab28a3f291adb093a8514a5094f1e2
+Deleted: sha256:846928ea7f056a0905f81607cf77f845d5a656db25e0b7feefa20f98b48ca79b
+Deleted: sha256:24302eb7d9085da80f016e7e4ae55417e412fb7e0a8021e95e3b60c67cde557d
+ubuntu@ip-10-0-2-185:~$ 
+<teps-Completed------------------------------------'
+----------------------------------------- Pre-Deploy-steps-Completed------------------------------------
+ubuntu@ip-10-0-2-185:~$ 
+<.us-east-1.amazonaws.com/assignment-jenkins:latest 
+Unable to find image '381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins:latest' locally
+latest: Pulling from assignment-jenkins
+
+[1A[2K
+2408cc74d12b: Pulling fs layer 
+[1B
+[1A[2K
+8283096dcba0: Pulling fs layer 
+[1B
+[1A[2K
+a3e654983208: Pulling fs layer 
+[1B
+[1A[2K
+024c9a3b77d6: Pulling fs layer 
+[1B
+[1A[2K
+d5788972b667: Pulling fs layer 
+[1B
+[1A[2K
+caa4403be1bd: Pulling fs layer 
+[1B
+[1A[2K
+0502d0fb6ce9: Pulling fs layer 
+[1B
+[1A[2K
+f3fc69c10a61: Pulling fs layer 
+[1B[5A[2K
+024c9a3b77d6: Waiting 
+[5B[4A[2K
+d5788972b667: Waiting 
+[4B[3A[2K
+caa4403be1bd: Waiting 
+[3B[2A[2K
+0502d0fb6ce9: Waiting 
+[2B[1A[2K
+f3fc69c10a61: Waiting 
+[1B[6A[2K
+a3e654983208: Downloading  26.53kB/2.346MB
+[6B[8A[2K
+2408cc74d12b: Downloading   32.3kB/2.799MB
+[8B[6A[2K
+a3e654983208: Verifying Checksum 
+[6B[6A[2K
+a3e654983208: Download complete 
+[6B[7A[2K
+8283096dcba0: Downloading  485.9kB/47.43MB
+[7B[8A[2K
+2408cc74d12b: Downloading  2.219MB/2.799MB
+[8B[5A[2K
+024c9a3b77d6: Downloading     450B/450B
+[5B[5A[2K
+024c9a3b77d6: Verifying Checksum 
+[5B[5A[2K
+024c9a3b77d6: Download complete 
+[5B[8A[2K
+2408cc74d12b: Verifying Checksum 
+[8B[8A[2K
+2408cc74d12b: Download complete 
+[8B[8A[2K
+2408cc74d12b: Extracting  32.77kB/2.799MB
+[8B[7A[2K
+8283096dcba0: Downloading  4.873MB/47.43MB
+[7B[3A[2K
+caa4403be1bd: Downloading     283B/283B
+[3B[3A[2K
+caa4403be1bd: Verifying Checksum 
+[3B[3A[2K
+caa4403be1bd: Download complete 
+[3B[7A[2K
+8283096dcba0: Downloading  8.772MB/47.43MB
+[7B[8A[2K
+2408cc74d12b: Extracting  294.9kB/2.799MB
+[8B[4A[2K
+d5788972b667: Downloading      90B/90B
+[4B[4A[2K
+d5788972b667: Verifying Checksum 
+[4B[4A[2K
+d5788972b667: Download complete 
+[4B[8A[2K
+2408cc74d12b: Extracting  2.195MB/2.799MB
+[8B[7A[2K
+8283096dcba0: Downloading  10.24MB/47.43MB
+[7B[2A[2K
+0502d0fb6ce9: Downloading  33.31kB/2.037MB
+[2B[8A[2K
+2408cc74d12b: Extracting  2.799MB/2.799MB
+[8B[1A[2K
+f3fc69c10a61: Downloading     649B/649B
+[1B[1A[2K
+f3fc69c10a61: Verifying Checksum 
+[1B[1A[2K
+f3fc69c10a61: Download complete 
+[1B[2A[2K
+0502d0fb6ce9: Verifying Checksum 
+[2B[2A[2K
+0502d0fb6ce9: Download complete 
+[2B[8A[2K
+2408cc74d12b: Pull complete 
+[8B[7A[2K
+8283096dcba0: Downloading  10.72MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Downloading  16.06MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Downloading  21.39MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Downloading  25.76MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Downloading  29.64MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Downloading  31.57MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Downloading  33.51MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Downloading  38.39MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Downloading  41.79MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Downloading  45.67MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Verifying Checksum 
+[7B[7A[2K
+8283096dcba0: Download complete 
+[7B[7A[2K
+8283096dcba0: Extracting  491.5kB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  2.949MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  5.407MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  8.356MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting   11.3MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  14.75MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  16.22MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  20.64MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  23.59MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  27.03MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  29.49MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  31.95MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  33.91MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  35.39MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  36.37MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  37.36MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  37.85MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  38.83MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  39.81MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting   40.8MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  41.78MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  42.76MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  43.75MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  44.73MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  45.71MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting   46.2MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  46.69MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Extracting  47.43MB/47.43MB
+[7B[7A[2K
+8283096dcba0: Pull complete 
+[7B[6A[2K
+a3e654983208: Extracting  32.77kB/2.346MB
+[6B[6A[2K
+a3e654983208: Extracting  819.2kB/2.346MB
+[6B[6A[2K
+a3e654983208: Extracting  2.346MB/2.346MB
+[6B[6A[2K
+a3e654983208: Pull complete 
+[6B[5A[2K
+024c9a3b77d6: Extracting     450B/450B
+[5B[5A[2K
+024c9a3b77d6: Extracting     450B/450B
+[5B[5A[2K
+024c9a3b77d6: Pull complete 
+[5B[4A[2K
+d5788972b667: Extracting      90B/90B
+[4B[4A[2K
+d5788972b667: Extracting      90B/90B
+[4B[4A[2K
+d5788972b667: Pull complete 
+[4B[3A[2K
+caa4403be1bd: Extracting     283B/283B
+[3B[3A[2K
+caa4403be1bd: Extracting     283B/283B
+[3B[3A[2K
+caa4403be1bd: Pull complete 
+[3B[2A[2K
+0502d0fb6ce9: Extracting  32.77kB/2.037MB
+[2B[2A[2K
+0502d0fb6ce9: Extracting  229.4kB/2.037MB
+[2B[2A[2K
+0502d0fb6ce9: Extracting  720.9kB/2.037MB
+[2B[2A[2K
+0502d0fb6ce9: Extracting  1.606MB/2.037MB
+[2B[2A[2K
+0502d0fb6ce9: Extracting  2.037MB/2.037MB
+[2B[2A[2K
+0502d0fb6ce9: Pull complete 
+[2B[1A[2K
+f3fc69c10a61: Extracting     649B/649B
+[1B[1A[2K
+f3fc69c10a61: Extracting     649B/649B
+[1B[1A[2K
+f3fc69c10a61: Pull complete 
+[1BDigest: sha256:d1a3426ee5cc7708cb6309c6785c4daf731d82ffd8d614ab52e08d82dfa748fa
+Status: Downloaded newer image for 381372271377.dkr.ecr.us-east-1.amazonaws.com/assignment-jenkins:latest
+43f6f34d02dd29f4a4f61e6bb7d4f906a5916b1dceb6fd09234d30382223ba61
+ubuntu@ip-10-0-2-185:~$             exit 0
+logout
+Connection to 10.0.2.185 closed.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
